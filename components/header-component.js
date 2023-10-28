@@ -6,14 +6,12 @@ export function renderHeaderComponent({ element }) {
   <div class="page-header">
       <h1 class="logo">instapro</h1>
       <button class="header-button add-or-login-button">
-      ${
-        user
+      ${user
           ? `<div title="Добавить пост" class="add-post-sign"></div>`
           : "Войти"
       }
       </button>
-      ${
-        user
+      ${user
           ? `<button title="${user.name}" class="header-button logout-button">Выйти</button>`
           : ""
       }  
