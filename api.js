@@ -17,7 +17,6 @@ export function getPosts({ token }) {
       return response.json();
     })
     .then((data) => {
-      console.log(data)
       return data.posts;
     });
 }
@@ -71,6 +70,7 @@ export const setLike = ({ token, postId }) => {
   })
     .then((response) => {
       if (response.status === 401) {
+        alert("Нет авторизации")
         throw new Error("Нет авторизации");
       }
 

@@ -1,9 +1,9 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
-import { likeEventListener } from "./like-component.js";
+import { posts, goToPage, getToken, renderApp, setPosts } from "../index.js";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
+import { setLike, removeLike, getPosts } from "../api.js";
 
 export function renderPostsPageComponent({ appEl }) {
   
@@ -55,7 +55,7 @@ export function renderPostsPageComponent({ appEl }) {
 });
 
   appEl.innerHTML = appHtml;
-
+  
   renderHeaderComponent({
     element: document.querySelector(".header-container"),
   });
@@ -68,5 +68,46 @@ export function renderPostsPageComponent({ appEl }) {
     });
   }
   
+  const likeEventListener = () => {
+    const likeButtons = document.querySelectorAll(".like-button");
+
+    likeButtons.forEach(likeButton => {
+      likeButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const postId = likeButton.dataset.postId;
+        const index = likeButton.dataset.index;
+        likeButton.classList.add("shake-bottom");
+
+        if (posts[index].isLiked) {
+          removeLike({ token: getToken(), postId })
+            .then(() => {
+              posts[index].isLiked = false;
+            })
+            .then(() => {
+              getPosts({ token: getToken() })
+                .then((response) => {
+                  setPosts(response);
+                  likeButton.classList.remove("shake-bottom");
+                  renderApp();
+                })
+            })
+        } else {
+          setLike({ token: getToken(), postId })
+            .then(() => {
+              posts[index].isLiked = true;
+            })
+            .then(() => {
+              getPosts({ token: getToken() })
+                .then((response) => {
+                  setPosts(response);
+                  likeButton.classList.remove("shake-bottom");
+                  renderApp();
+                })
+            })
+        }
+      });
+    });
+  };
+
   likeEventListener();
 }
